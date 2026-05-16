@@ -8,5 +8,6 @@ Projekt za vježbu iz Neo4j za kolegij Upravljanje Podacima.
 docker compose up -d
 ```
 
- - Neo4j Browser: http://localhost:7474 \
-Prijavljujemo se sa korisničkim imenom neo4j i lozinkom vjezba2026.
+ - Neo4j Browser: http://localhost:7474 
+ - Korisničko ime: neo4j
+ - Lozinka: vjezba2026
