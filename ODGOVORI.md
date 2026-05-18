@@ -6,4 +6,5 @@
 MATCH (o:Osoba)-[:ŽIVI_U]->(g:Grad) - vraća samo osobe koje imaju poveznicu prema gradu.
 OPTIONAL MATCH (o:Osoba)-[:ŽIVI_U]->(g:Grad) - vraća sve osobe, a za one bez poveznice vraća null u g.naziv.
 
-4. Ako ne pronađe put, ne vraća ništa. Vrijednost puta je NULL jer ne postoji povezanost između čvorova.
+4. Ako ne pronađe put, ne vraća ništa. Vrijednost puta je NULL jer ne postoji povezanost između čvorova
+

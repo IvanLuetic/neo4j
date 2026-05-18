@@ -1,7 +1,7 @@
-Zadatak 1
+// Zadatak 1
 RETURN 'Neo4j radi!' AS poruka
 
-Zadatak 2
+// Zadatak 2
 
 CREATE (f1:Film {naslov: 'Inception', godina: 2010, ocjena: 8.8, zanr: 'sci-fi'})
 CREATE (f2:Film {naslov: 'The Dark Knight', godina: 2008, ocjena: 9.0, zanr: 'akcija'})
@@ -26,7 +26,7 @@ CREATE (o5:Osoba {ime: 'Another actor', dob: 50})
 
 CREATE (g3:Grad {naziv: 'New city'})
 
-Zadatak 3
+// Zadatak 3
 
 MATCH (o:Osoba {ime: 'Christopher Nolan'}), (f:Film {naslov: 'Inception'})
 CREATE (o)-[:REZIRAO]->(f);
@@ -80,7 +80,7 @@ CREATE (o)-[:GLUMIO_U]->(f);
 
 MATCH ()-[r]->() RETURN type(r) AS tip, count(*) AS broj ORDER BY broj DESC
 
-Zadatak 4
+// Zadatak 4
 
 MATCH (f:Film)
 RETURN f.naslov, f.godina, f.ocjena
@@ -173,3 +173,55 @@ RETURN DISTINCT labels(connected), connected, length(shortestPath((london)-[*]-(
 
 MATCH (francis:Osoba {ime: 'Francis Ford Coppola'}), (leo:Osoba {ime: 'Leonardo DiCaprio'})
 RETURN EXISTS((francis)-[*1..4]-(leo)) AS povezani
+
+// Zadatak 6
+
+MATCH (f:Film)
+RETURN f.zanr AS zanr, count(f) AS broj_filmova
+ORDER BY broj_filmova DESC
+
+MATCH (f:Film)
+WITH f.zanr AS zanr, count(f) AS broj, avg(f.ocjena) AS prosjecna_ocjena
+WHERE broj > 1
+RETURN zanr, broj, round(prosjecna_ocjena * 10) / 10 AS ocjena
+ORDER BY prosjecna_ocjena DESC
+
+MATCH (o:Osoba)-[:REZIRAO]->(f:Film)
+WITH o.ime AS redatelj, count(f) AS filmova, collect(f.naslov) AS naslovi
+RETURN redatelj, filmova, naslovi
+ORDER BY filmova DESC
+
+MATCH (f:Film)
+WITH f.zanr AS zanr, collect(f ORDER BY f.ocjena DESC)[0..3] AS top_filmovi
+RETURN zanr,
+       [film IN top_filmovi | film.naslov + ' (' + toString(film.ocjena) + ')']
+       AS top3
+
+
+MATCH (f:Film)
+RETURN count(f) AS broj_filmova,
+       avg(f.ocjena) AS prosjecna_ocjena
+
+    
+MATCH (f:Film)
+WITH f.zanr AS zanr,
+     count(f) AS broj_filmova,
+     max(f.ocjena) AS max_ocjena
+
+RETURN zanr, broj_filmova, max_ocjena
+ORDER BY broj_filmova DESC
+
+MATCH (o:Osoba)-[:ZIVI_U]->(g:Grad)
+WITH g, count(o) AS broj_osoba
+ORDER BY broj_osoba DESC
+LIMIT 1
+MATCH (o:Osoba)-[:ZIVI_U]->(g)
+RETURN o.ime AS osoba, g.naziv AS grad;
+
+MATCH (o:Osoba)-[:GLUMIO_U]->(f:Film)
+
+RETURN f.naslov AS film,
+       collect(o.ime) AS glumci
+ORDER BY film
+
+
