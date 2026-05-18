@@ -81,3 +81,51 @@ CREATE (o)-[:GLUMIO_U]->(f);
 MATCH ()-[r]->() RETURN type(r) AS tip, count(*) AS broj ORDER BY broj DESC
 
 Zadatak 4
+
+MATCH (f:Film)
+RETURN f.naslov, f.godina, f.ocjena
+ORDER BY f.ocjena DESC
+
+MATCH (f:Film)
+WHERE f.ocjena > 8.7
+RETURN f.naslov, f.ocjena
+ORDER BY f.ocjena DESC
+
+MATCH (o:Osoba)-[:REZIRAO]->(f:Film)
+WHERE o.ime = 'Christopher Nolan'
+RETURN f.naslov, f.godina, f.ocjena
+ORDER BY f.godina
+
+MATCH (o:Osoba)-[:GLUMIO_U]->(f:Film)
+WHERE f.zanr = 'sci-fi'
+RETURN o.ime AS glumac, f.naslov AS film
+
+MATCH (o:Osoba)-[:REZIRAO]->(f:Film)
+RETURN o.ime AS redatelj, collect(f.naslov) AS filmovi
+ORDER BY redatelj
+
+MATCH (o:Osoba)
+OPTIONAL MATCH (o)-[:REZIRAO]->(f:Film)
+RETURN o.ime, count(f) AS broj_reziranih_filmova
+ORDER BY broj_reziranih_filmova DESC
+
+Zadatak 4
+
+MATCH (f:Film)
+WHERE f.zanr = 'triler'
+RETURN f.naslov, f.ocjena
+ORDER BY f.ocjena DESC
+
+MATCH (o:Osoba)-[:ZIVI_U]->(g:Grad)
+RETURN o.ime AS redatelj, g.naziv AS grad
+
+MATCH (f:Film)
+WHERE f.godina >= 2008 AND f.godina <= 2015
+RETURN f.naslov, f.godina, f.ocjena
+ORDER BY f.godina;
+
+MATCH (o:Osoba)-[:REZIRAO]->(f:Film)
+WITH o, count(f) AS broj_filmova
+WHERE broj_filmova > 1
+RETURN o.ime AS redatelj, broj_filmova
+ORDER BY broj_filmova DESC
