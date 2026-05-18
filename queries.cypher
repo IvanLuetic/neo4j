@@ -129,3 +129,47 @@ WITH o, count(f) AS broj_filmova
 WHERE broj_filmova > 1
 RETURN o.ime AS redatelj, broj_filmova
 ORDER BY broj_filmova DESC
+
+// Zadatak 5
+
+MATCH (o:Osoba)-[:ŽIVI_U]->(g:Grad) → vraća samo osobe koje imaju poveznicu prema gradu.
+
+OPTIONAL MATCH (o:Osoba)-[:ŽIVI_U]->(g:Grad) → vraća sve osobe, a za one bez grada vraća null u stupcu g.naziv.
+
+MATCH p = shortestPath(
+  (a:Osoba {ime: 'Christopher Nolan'})
+  -[*]-
+  (b:Osoba {ime: 'Bong Joon-ho'})
+)
+RETURN p, length(p) AS duljina_puta
+
+
+MATCH p = shortestPath(
+  (a:Osoba {ime: 'Christopher Nolan'})
+  -[*]-
+  (b:Osoba {ime: 'Bong Joon-ho'})
+)
+RETURN p, length(p) AS duljina_puta
+
+
+MATCH p = (a:Osoba {ime: 'Leonardo DiCaprio'})
+          -[*1..4]-
+          (b:Osoba {ime: 'Bong Joon-ho'})
+RETURN p, length(p) AS duljina
+ORDER BY duljina
+LIMIT 5
+
+
+MATCH p = (a:Osoba {ime: 'Leonardo DiCaprio'})
+          -[*1..4]-
+          (b:Osoba {ime: 'Bong Joon-ho'})
+RETURN p, length(p) AS duljina
+ORDER BY duljina
+LIMIT 5
+
+MATCH (london:Grad {naziv: 'London'})
+MATCH (london)-[*1..2]-(connected)
+RETURN DISTINCT labels(connected), connected, length(shortestPath((london)-[*]-(connected))) AS udaljenost
+
+MATCH (francis:Osoba {ime: 'Francis Ford Coppola'}), (leo:Osoba {ime: 'Leonardo DiCaprio'})
+RETURN EXISTS((francis)-[*1..4]-(leo)) AS povezani
