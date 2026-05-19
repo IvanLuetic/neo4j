@@ -225,3 +225,108 @@ RETURN f.naslov AS film,
 ORDER BY film
 
 
+//Zadatak 7
+
+CREATE INDEX film_ocjena FOR (f:Film) ON (f.ocjena);
+CREATE INDEX film_naslov FOR (f:Film) ON (f.naslov);
+CREATE INDEX osoba_ime FOR (o:Osoba) ON (o.ime);
+
+CREATE CONSTRAINT film_naslov_unique
+FOR (f:Film) REQUIRE f.naslov IS UNIQUE;
+
+CREATE CONSTRAINT film_naslov_nn
+FOR (f:Film) REQUIRE f.naslov IS NOT NULL;
+
+SHOW INDEXES;
+SHOW CONSTRAINTS;
+
+// Ovo ce baciti gresku jer Inception vec postoji (UNIQUE constraint)
+CREATE (f:Film {naslov: 'Inception', godina: 2025, ocjena: 5.0})
+
+// MERGE ce pronaci postojeci film umjesto kreiranja duplikata:
+MERGE (f:Film {naslov: 'Inception'})
+ON MATCH SET f.opis = 'Klasik Christophera Nolana'
+ON CREATE SET f.godina = 2010, f.ocjena = 8.8
+RETURN f
+
+// Zavrsni Zadatak
+
+CREATE (:Zanr {naziv: 'Noise Rock'});
+CREATE (:Zanr {naziv: 'Drone'});
+CREATE (:Zanr {naziv: 'Folk'});
+CREATE (:Zanr {naziv: 'Post-Punk'});
+CREATE (:Zanr {naziv: 'Electronic'});
+
+CREATE (:Izvodac {ime: 'Swans', drzava: 'SAD', godina_osnivanja: 1982});
+CREATE (:Izvodac {ime: 'Natural Snow Buildings', drzava: 'Francuska', godina_osnivanja: 1997});
+CREATE (:Izvodac {ime: 'Joy Division', drzava: 'Velika Britanija', godina_osnivanja: 1976});
+CREATE (:Izvodac {ime: 'Coil', drzava: 'Velika Britanija', godina_osnivanja: 1982});
+CREATE (:Izvodac {ime: 'TwinSisterMoon', drzava: 'SAD', godina_osnivanja: 2001});
+
+CREATE (:Album {naziv: 'Soundtracks for the Blind', godina: 1996, ocjena: 8.9});
+CREATE (:Album {naziv: 'The Glowing Man', godina: 2016, ocjena: 9.4});
+CREATE (:Album {naziv: 'To Be Kind', godina: 2014, ocjena: 9.2});
+CREATE (:Album {naziv: 'The Dance of the Moon and the Sun', godina: 2006, ocjena: 8.7});
+CREATE (:Album {naziv: 'The Winter Ray', godina: 2004, ocjena: 8.2});
+CREATE (:Album {naziv: 'Unknown Pleasures', godina: 1979, ocjena: 7.9});
+CREATE (:Album {naziv: 'Closer', godina: 1980, ocjena: 8.3});
+CREATE (:Album {naziv: 'The Ape of Naples', godina: 2005, ocjena: 8.8});
+CREATE (:Album {naziv: 'Love\'s Secret Domain', godina: 1991, ocjena: 7.5});
+CREATE (:Album {naziv: 'When Stars Glide Through Solid', godina: 2008, ocjena: 7.9});
+
+MATCH (i:Izvodac {ime: 'Swans'}), (a:Album {naziv: 'To Be Kind'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Swans'}), (a:Album {naziv: 'Soundtracks for the Blind'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Swans'}), (a:Album {naziv: 'The Glowing Man'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Natural Snow Buildings'}), (a:Album {naziv: 'The Dance of the Moon and the Sun'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Natural Snow Buildings'}), (a:Album {naziv: 'The Winter Ray'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Joy Division'}), (a:Album {naziv: 'Unknown Pleasures'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Joy Division'}), (a:Album {naziv: 'Closer'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Coil'}), (a:Album {naziv: 'The Ape of Naples'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'Coil'}), (a:Album {naziv: 'Love\'s Secret Domain'}) CREATE (i)-[:OBJAVIO]->(a);
+MATCH (i:Izvodac {ime: 'TwinSisterMoon'}), (a:Album {naziv: 'When Stars Glide Through Solid'}) CREATE (i)-[:OBJAVIO]->(a);
+
+MATCH (a:Album {naziv: 'To Be Kind'}), (z:Zanr {naziv: 'Noise Rock'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'Soundtracks for the Blind'}), (z:Zanr {naziv: 'Drone'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'The Glowing Man'}), (z:Zanr {naziv: 'Noise Rock'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'The Dance of the Moon and the Sun'}), (z:Zanr {naziv: 'Folk'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'The Winter Ray'}), (z:Zanr {naziv: 'Drone'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'Unknown Pleasures'}), (z:Zanr {naziv: 'Post-Punk'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'Closer'}), (z:Zanr {naziv: 'Post-Punk'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'The Ape of Naples'}), (z:Zanr {naziv: 'Electronic'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'Love\'s Secret Domain'}), (z:Zanr {naziv: 'Electronic'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+MATCH (a:Album {naziv: 'When Stars Glide Through Solid'}), (z:Zanr {naziv: 'Folk'}) CREATE (a)-[:PRIPADA_ZANRU]->(z);
+
+MATCH (a:Izvodac {ime: 'Natural Snow Buildings'}), (b:Izvodac {ime: 'TwinSisterMoon'}) CREATE (a)-[:SURADIVAO_S]->(b);
+MATCH (a:Izvodac {ime: 'Swans'}), (b:Izvodac {ime: 'Coil'}) CREATE (a)-[:SURADIVAO_S]->(b);
+
+MATCH (i:Izvodac {ime: 'Swans'})-[:OBJAVIO]->(a:Album)
+RETURN a.naziv AS album, a.godina AS godina
+ORDER BY a.godina ASC
+
+MATCH (i:Izvodac {ime: 'Swans'})-[:OBJAVIO]->(a:Album)
+RETURN a.naziv AS album, a.godina AS godina
+ORDER BY a.godina ASC;
+
+MATCH (a:Album)
+WHERE a.ocjena > 8.0
+RETURN a.naziv AS album, a.ocjena AS ocjena
+ORDER BY a.ocjena DESC;
+
+MATCH (i:Izvodac)
+OPTIONAL MATCH (i)-[:OBJAVIO]->(a:Album)
+RETURN i.ime AS izvodac, COUNT(a) AS broj_albuma
+ORDER BY broj_albuma DESC;
+
+MATCH (start:Izvodac {ime: 'Swans'}), (end:Izvodac {ime: 'TwinSisterMoon'})
+MATCH p = shortestPath((start)-[:SLICAN|SURADIVAO_S*]-(end))
+RETURN p;
+
+MATCH (a:Album)-[:PRIPADA_ZANRU]->(z:Zanr)
+WITH z.naziv AS zanr, AVG(a.ocjena) AS prosjek, COUNT(a) AS broj_albuma
+WHERE prosjek > 7.5
+RETURN zanr, broj_albuma, prosjek
+ORDER BY prosjek DESC;
+
+DROP INDEX izvodac_ime IF EXISTS;
+CREATE CONSTRAINT izvodac_ime_unique FOR (i:Izvodac) REQUIRE i.ime IS UNIQUE;
+CREATE INDEX album_ocjena FOR (a:Album) ON (a.ocjena);
