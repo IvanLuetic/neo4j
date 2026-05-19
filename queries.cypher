@@ -109,7 +109,7 @@ OPTIONAL MATCH (o)-[:REZIRAO]->(f:Film)
 RETURN o.ime, count(f) AS broj_reziranih_filmova
 ORDER BY broj_reziranih_filmova DESC
 
-Zadatak 4
+// Zadatak 4
 
 MATCH (f:Film)
 WHERE f.zanr = 'triler'
@@ -132,10 +132,6 @@ ORDER BY broj_filmova DESC
 
 // Zadatak 5
 
-MATCH (o:Osoba)-[:ŽIVI_U]->(g:Grad) → vraća samo osobe koje imaju poveznicu prema gradu.
-
-OPTIONAL MATCH (o:Osoba)-[:ŽIVI_U]->(g:Grad) → vraća sve osobe, a za one bez grada vraća null u stupcu g.naziv.
-
 MATCH p = shortestPath(
   (a:Osoba {ime: 'Christopher Nolan'})
   -[*]-
@@ -143,6 +139,11 @@ MATCH p = shortestPath(
 )
 RETURN p, length(p) AS duljina_puta
 
+MATCH (a:Osoba {ime: 'Leonardo DiCaprio'})
+MATCH (b:Osoba {ime: 'Christopher Nolan'})
+RETURN EXISTS {
+  MATCH (a)-[:PRIJATELJ|GLUMIO_U|ZIVI_U*1..3]-(b)
+} AS povezani
 
 MATCH p = shortestPath(
   (a:Osoba {ime: 'Christopher Nolan'})
@@ -150,15 +151,6 @@ MATCH p = shortestPath(
   (b:Osoba {ime: 'Bong Joon-ho'})
 )
 RETURN p, length(p) AS duljina_puta
-
-
-MATCH p = (a:Osoba {ime: 'Leonardo DiCaprio'})
-          -[*1..4]-
-          (b:Osoba {ime: 'Bong Joon-ho'})
-RETURN p, length(p) AS duljina
-ORDER BY duljina
-LIMIT 5
-
 
 MATCH p = (a:Osoba {ime: 'Leonardo DiCaprio'})
           -[*1..4]-
@@ -225,7 +217,7 @@ RETURN f.naslov AS film,
 ORDER BY film
 
 
-//Zadatak 7
+// Zadatak 7
 
 CREATE INDEX film_ocjena FOR (f:Film) ON (f.ocjena);
 CREATE INDEX film_naslov FOR (f:Film) ON (f.naslov);
